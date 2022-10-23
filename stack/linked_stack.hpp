@@ -1,5 +1,5 @@
-#ifndef _LINKED_STACK_HPP
-#define _LINKED_STACK_HPP
+#ifndef _LINKED_STACK_CPP
+#define _LINKED_STACK_CPP
 
 #include <iostream>
 #include <cassert>
@@ -16,44 +16,62 @@ class LinkedStack {
     StackElement<T>* topPtr; // указател към връх на стека
 
     // Помощни методи
-    void copy(LinkedStack const& ls);
+    void copyStack(LinkedStack const& ls);
     void erase();
 public:
-    // създаване на празен стек
+    // Създаване на празен стек
     LinkedStack();
 
-    // конструктор за копиране
+    // Конструктор за копиране
     LinkedStack(LinkedStack const& ls);
 
-    // операция за присвояване
+    // Операция за присвояване
     LinkedStack& operator=(LinkedStack const& ls);
 
-    // деструктор
+    // Деструктор
     ~LinkedStack();
 
-    // move?
-
-    // проверка за празнота на стек
+    // Проверка за празнота на стек
     bool empty() const;
 
-    // включване на елемент 
+    // Включване на елемент 
     void push(T const& x);
 
-    // изключване на елемент
-    T pop();
+    // Изключване на елемент
+    void pop();
 
-    // извличане последно включения елемент
+    // Извличане последно включения елемент
     T const& top() const;
 
-    // извличане последно включения елемент + възможност за неговата промяната
+    // Извличане последно включения елемент + възможност за неговата промяната
     T& top();
 };
 
-// Създаване на празен стек
+// Голяма четворка
 template <typename T>
 LinkedStack<T>::LinkedStack() {
     topPtr = nullptr;
 }
+
+template <typename T>
+LinkedStack<T>::LinkedStack(LinkedStack<T> const& ls) {
+    copyStack(ls);
+}
+
+template <typename T>
+LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const& ls) {
+    if (this != &ls) {
+        erase();
+        copyStack(ls);
+    }
+    return *this;
+}
+
+template <typename T>
+LinkedStack<T>::~LinkedStack() {
+    erase();
+}
+
 
 // Проверка за празен стек
 template <typename T>
@@ -64,7 +82,7 @@ bool LinkedStack<T>::empty() const {
 // Копиране на стек 
 // Вариант 3 - чрез използване на допълнителен стек
 template <typename T>
-void LinkedStack<T>::copy(LinkedStack<T> const& ls) {
+void LinkedStack<T>::copyStack(LinkedStack<T> const& ls) {
     topPtr = nullptr;
 
     StackElement<T>* p = ls.topPtr;
@@ -73,8 +91,10 @@ void LinkedStack<T>::copy(LinkedStack<T> const& ls) {
         tmp.push(p->data);
         p = p->next;
     }
-    while (!tmp.empty())
-        push(tmp.pop());
+    while (!tmp.empty()) {
+        push(tmp.top());
+        tmp.pop();
+    }
 }
 
 // Изтриване на паметта за стека
@@ -84,28 +104,6 @@ void LinkedStack<T>::erase() {
     while (!empty()) {
         pop();
     }
-}
-
-// Конструктор за копиране
-template <typename T>
-LinkedStack<T>::LinkedStack(LinkedStack<T> const& ls) {
-    copy(ls);
-}
-
-// Деструктор
-template <typename T>
-LinkedStack<T>::~LinkedStack() {
-    erase();
-}
-
-// Оператор за присвояване между два стека
-template <typename T>
-LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const& ls) {
-    if (this != &ls) {
-        erase();
-        copy(ls);
-    }
-    return *this;
 }
 
 // Добавяне на нов елемент
@@ -126,13 +124,10 @@ void LinkedStack<T>::push(T const& x) {
 
 // Изтриване на елемента на върха на стека
 template <typename T>
-T LinkedStack<T>::pop() {
+void LinkedStack<T>::pop() {
     if (empty()) {
-        std::cerr << "Stack is empty" << std::endl;
-        return T();
+        throw std::runtime_error("You can not delete the top element of an empty stack!");
     }
-
-    T result = top();
 
     // Насочване на временен указател към текущия връх на стека, който следва да бъде изтрит
     StackElement<T>* tempElemPtr = topPtr;
@@ -142,20 +137,22 @@ T LinkedStack<T>::pop() {
 
     // Изтриване на върха на стека
     delete tempElemPtr;
-
-    return result;
 }
 
 template <typename T>
 T const& LinkedStack<T>::top() const {
-    assert(!empty());
+    if (empty()) {
+        throw std::runtime_error("You can not get the top element of an empty stack!");
+    }
     
     return topPtr->data;
 }
 
 template <typename T>
 T& LinkedStack<T>::top() {
-    assert(!empty());
+    if (empty()) {
+        throw std::runtime_error("You can not get the top element of an empty stack!");
+    }
 
     return topPtr->data;
 }
