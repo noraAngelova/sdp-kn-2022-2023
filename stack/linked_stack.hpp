@@ -16,17 +16,17 @@ class LinkedStack {
     StackElement<T>* topPtr; // указател към връх на стека
 
     // Помощни методи
-    void copyStack(LinkedStack const& ls);
+    void copyStack(LinkedStack const& other);
     void erase();
 public:
     LinkedStack();
-    LinkedStack(LinkedStack const& ls);
-    LinkedStack& operator=(LinkedStack const& ls);
+    LinkedStack(LinkedStack const& other);
+    LinkedStack& operator=(LinkedStack const& other);
     ~LinkedStack();
 
     // Move семантики
-    LinkedStack(LinkedStack const&& ls);
-    LinkedStack& operator=(LinkedStack const&& ls);
+    LinkedStack(LinkedStack && other);
+    LinkedStack& operator=(LinkedStack && other);
 
     // Проверка за празнота на стек
     bool empty() const;
@@ -44,6 +44,34 @@ public:
     T& top();
 };
 
+// Помощни методи
+// Копиране на стек - O(n) 
+template <typename T>
+void LinkedStack<T>::copyStack(LinkedStack<T> const& other) {
+    if (!other.topPtr) {
+        topPtr = nullptr;
+        return;
+    }
+    // other не е празен
+    topPtr = new StackElement<T>{ other.topPtr->data, nullptr };
+    // Помощен указател за елемент, който ще бъде копиран 
+    StackElement<T>* nextToCopy = other.topPtr->next;
+    // Помощен указател за последно добавен елемент
+    StackElement<T>* lastAdded = topPtr;
+    while (nextToCopy) {
+        lastAdded = lastAdded->next = new StackElement<T>{ nextToCopy->data, nullptr };
+        nextToCopy = nextToCopy->next;
+    }
+}
+
+// Изтриване на паметта за стека - O(n)
+template <typename T>
+void LinkedStack<T>::erase() {
+    while (!empty()) {
+        pop();
+    }
+}
+
 // Голяма четворка
 template <typename T>
 LinkedStack<T>::LinkedStack() {
@@ -51,15 +79,15 @@ LinkedStack<T>::LinkedStack() {
 }
 
 template <typename T>
-LinkedStack<T>::LinkedStack(LinkedStack<T> const& ls) {
-    copyStack(ls);
+LinkedStack<T>::LinkedStack(LinkedStack<T> const& other) {
+    copyStack(other);
 }
 
 template <typename T>
-LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const& ls) {
-    if (this != &ls) {
+LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const& other) {
+    if (this != &other) {
         erase();
-        copyStack(ls);
+        copyStack(other);
     }
     return *this;
 }
@@ -72,14 +100,15 @@ LinkedStack<T>::~LinkedStack() {
 // Move семантики 
 // O(1)
 template <typename T>
-LinkedStack<T>::LinkedStack(LinkedStack<T> const&& ls) {
-    topPtr = ls.topPtr;
-    topPtr = nullptr;
+LinkedStack<T>::LinkedStack(LinkedStack<T> && other) {
+    topPtr = other.topPtr;
+    other.topPtr = nullptr;
 }
+
 // O(1) или O(n)
 template <typename T>
-LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const&& ls) {
-    if (this != &ls) {
+LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T>&& other) {
+    if (this != &other) {
         erase();
         topPtr = other.topPtr;
         other.topPtr = nullptr;
@@ -87,41 +116,13 @@ LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const&& ls) {
     return *this;
 }
 
-
 // Проверка за празен стек
 template <typename T>
 bool LinkedStack<T>::empty() const {
     return topPtr == nullptr;
 }
 
-// Копиране на стек 
-// Вариант 3 - чрез използване на допълнителен стек
-template <typename T>
-void LinkedStack<T>::copyStack(LinkedStack<T> const& ls) {
-    topPtr = nullptr;
-
-    StackElement<T>* p = ls.topPtr;
-    LinkedStack<T> tmp;
-    while (p != nullptr) {
-        tmp.push(p->data);
-        p = p->next;
-    }
-    while (!tmp.empty()) {
-        push(tmp.top());
-        tmp.pop();
-    }
-}
-
-// Изтриване на паметта за стека
-template <typename T>
-void LinkedStack<T>::erase() {
-    // !!! delete topPtr;
-    while (!empty()) {
-        pop();
-    }
-}
-
-// Добавяне на нов елемент
+// Добавяне на нов елемент - O(1)
 template <typename T>
 void LinkedStack<T>::push(T const& x) {
     // Заделяне на памет за нов елемент
@@ -137,7 +138,7 @@ void LinkedStack<T>::push(T const& x) {
     topPtr = newElemPtr;
 }
 
-// Изтриване на елемента на върха на стека
+// Изтриване на елемента на върха на стека - O(1)
 template <typename T>
 void LinkedStack<T>::pop() {
     if (empty()) {
@@ -154,15 +155,18 @@ void LinkedStack<T>::pop() {
     delete tempElemPtr;
 }
 
+
+// Връщане на елемента на върха на стека - O(1)
 template <typename T>
 T const& LinkedStack<T>::top() const {
     if (empty()) {
         throw std::runtime_error("You can not get the top element of an empty stack!");
     }
-    
+
     return topPtr->data;
 }
 
+// Връщане на елемента на върха на стека - O(1)
 template <typename T>
 T& LinkedStack<T>::top() {
     if (empty()) {
@@ -171,5 +175,4 @@ T& LinkedStack<T>::top() {
 
     return topPtr->data;
 }
-
 #endif
