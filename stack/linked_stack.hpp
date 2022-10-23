@@ -19,17 +19,14 @@ class LinkedStack {
     void copyStack(LinkedStack const& ls);
     void erase();
 public:
-    // Създаване на празен стек
     LinkedStack();
-
-    // Конструктор за копиране
     LinkedStack(LinkedStack const& ls);
-
-    // Операция за присвояване
     LinkedStack& operator=(LinkedStack const& ls);
-
-    // Деструктор
     ~LinkedStack();
+
+    // Move семантики
+    LinkedStack(LinkedStack const&& ls);
+    LinkedStack& operator=(LinkedStack const&& ls);
 
     // Проверка за празнота на стек
     bool empty() const;
@@ -70,6 +67,24 @@ LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const& ls) {
 template <typename T>
 LinkedStack<T>::~LinkedStack() {
     erase();
+}
+
+// Move семантики 
+// O(1)
+template <typename T>
+LinkedStack<T>::LinkedStack(LinkedStack<T> const&& ls) {
+    topPtr = ls.topPtr;
+    topPtr = nullptr;
+}
+// O(1) или O(n)
+template <typename T>
+LinkedStack<T>& LinkedStack<T>::operator=(LinkedStack<T> const&& ls) {
+    if (this != &ls) {
+        erase();
+        topPtr = other.topPtr;
+        other.topPtr = nullptr;
+    }
+    return *this;
 }
 
 
