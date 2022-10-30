@@ -27,13 +27,13 @@ public:
 template <typename T>
 Stack<T>::Stack() : topIndex(-1) {}
 
-// Проверка дали стекът е празен
+// Проверка дали стекът е празен - O(1)
 template <typename T>
 bool Stack<T>::empty() const {
 	return topIndex == -1;
 }
 
-// Проверка дали стекът е пълен
+// Проверка дали стекът е пълен - O(1)
 template <typename T>
 bool Stack<T>::full() const {
 	return topIndex == MAX_SIZE - 1;
@@ -53,11 +53,10 @@ T Stack<T>::top() const {
 template <typename T>
 void Stack<T>::push(T const& x) {
     if (full()) {
-        std::cerr << "The stack is full!\n";
+        throw std::runtime_error("Stack is full!");
     }
-    else {
-        elements[++topIndex] = x;
-    }
+    
+    elements[++topIndex] = x;
 }
 
 // Изтриване на елемента на върха на стека - O(1)
@@ -68,5 +67,4 @@ void Stack<T>::pop() {
     }
     topIndex--;
 }
-
 #endif
