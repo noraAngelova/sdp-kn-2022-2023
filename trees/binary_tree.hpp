@@ -9,7 +9,8 @@ struct BinTreeNode {
     T data;
     BinTreeNode* left, * right;
 
-    BinTreeNode(const T& value, BinTreeNode* leftNode, BinTreeNode* rightNode) : data(value), left(leftNode), right(rightNode) {}
+    BinTreeNode(const T& value, BinTreeNode* leftNode, BinTreeNode* rightNode) 
+        : data(value), left(leftNode), right(rightNode) {}
     BinTreeNode() {}
 };
 
