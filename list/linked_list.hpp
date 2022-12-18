@@ -2,7 +2,7 @@
 #define _LINKED_LIST_HPP
 
 /*	Представяне на елемент на свързан списък с една връзка
-     ___________
+	 ___________
 	|ст/ст| адр |
 	|_____|_____|
 	 data   next
@@ -26,7 +26,7 @@ class LinkedListIterator {
 
 	// Осигурява достъп до вътрешното представяне на списъка
 	friend LinkedList<T>;
-	
+
 	// Реализира абстракция на позиция чрез ptr към елемент
 	LLE* ptr;
 public:
@@ -109,7 +109,7 @@ class LinkedList {
 	using LLE = LinkedListElement<T>;
 
 	// Представяне на свързан списък с два указателя
-	LLE *front, *back;
+	LLE* front, * back;
 
 	// Помощна член-функция за изтриване на динамично заделената памет
 	void erase();
@@ -119,19 +119,19 @@ public:
 
 	// Подразбиращ се конструктор, който създава празен списък
 	LinkedList() : front(nullptr), back(nullptr) {}
-	
+
 	// Конструктор за копиране и оператор за присвояване за свързан списък
 	LinkedList(LinkedList<T> const& ll);
 	LinkedList<T>& operator=(LinkedList<T> const& ll);
-	
+
 	// Деструктор
 	~LinkedList() {
 		erase();
 	}
 
 	// Move конструктор и оператор за присвояване
-	LinkedList(LinkedList<T> && ll);
-	LinkedList<T>& operator=(LinkedList<T> && ll);
+	LinkedList(LinkedList<T>&& ll);
+	LinkedList<T>& operator=(LinkedList<T>&& ll);
 
 
 	// Методи за взимане на позиции в свързания списък
@@ -159,10 +159,10 @@ public:
 	// Основни методи за добавяне на елемент
 	bool insertBefore(I const& it, T const& x);
 	bool insertAfter(I const& it, T const& x);
-	
+
 	// Основни методи за изтриване на елемент
 	bool deleteBefore(I const& it, T& x);
-	bool deleteAfter(I const& it, T&x);
+	bool deleteAfter(I const& it, T& x);
 	bool deleteAt(I const& it, T& x);
 
 	// Допълнителни методи за добавяне и изтриване на елементи
@@ -203,15 +203,21 @@ public:
 		return deleteAt(end(), x);
 	}
 
+	// O(n) по време, O(1) по памет
+	bool deleteLast() {
+		T x;
+		return deleteLast(x);
+	}
+
 	// Методи за конкатенация на елементи от списъка подаден като параметър
 	void append(LinkedList<T> const& ll);
-	void appendAssign(LinkedList<T> & ll);
+	void appendAssign(LinkedList<T>& ll);
 
 	// Синтактична захар
 	// Добавяне на елемент чрез оператора +=
-	LinkedList<T>& operator+=(T const& x) { 
-		insertLast(x); 
-		return *this; 
+	LinkedList<T>& operator+=(T const& x) {
+		insertLast(x);
+		return *this;
 	}
 
 private:
