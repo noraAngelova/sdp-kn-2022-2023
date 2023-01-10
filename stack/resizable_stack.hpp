@@ -72,7 +72,9 @@ template <typename T>
 void RStack<T>::resize() {
     T* oldStackPtr = elements;
     elements = new T[2 * capacity];
-    copyElements(oldStackPtr);
+    for (unsigned i = 0; i < capacity; i++) {
+        elements[i] = oldStackPtr[i];
+    }
     capacity *= 2;        // Удвояване на капацитета
     delete[] oldStackPtr; // Изтриване на старата памет
 }
